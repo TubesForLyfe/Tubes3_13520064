@@ -9,7 +9,6 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
-	_ "github.com/joho/godotenv"
 )
 
 type Penyakit struct {
