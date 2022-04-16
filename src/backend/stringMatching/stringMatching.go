@@ -2,8 +2,65 @@ package string_matching
 
 import "fmt"
 
-func KMP() bool {
+func Border(pattern string) []int {
+	// return size
+	var borderArr []int
+	borderArr = append(borderArr, 0)
+	i := 1
+	j := 0
+	size := len(pattern)
+	for loop := true; loop; loop = (i < size) {
+		// fmt.Println("i = ", i, "c[i] = ", string(pattern[i]))
+		// fmt.Println("j = ", j, "c[j] = ", string(pattern[j]))
+
+		if pattern[j] == pattern[i] {
+			borderArr = append(borderArr, j+1)
+			i++
+			j++
+			// fmt.Println("1")
+		} else if j > 0 {
+			j = borderArr[j-1]
+			// fmt.Println("2")
+		} else {
+			borderArr = append(borderArr, 0)
+			i++
+			// fmt.Println("3")
+		}
+		// fmt.Println(borderArr)
+		// fmt.Println("")
+	}
+
+	return borderArr
+
+}
+
+func KMP(pattern string, text string) bool {
 	// TODO
+	n := len(text)
+	m := len(pattern)
+
+	borderArr := Border(pattern)
+
+	i := 0
+	j := 0
+
+	for loop := true; loop; loop = (i < n) {
+		if pattern[j] == text[i] {
+			if j == m-1 { // end of pattern
+				return true
+			} else {
+				i += 1
+				j += 1
+			}
+		} else if j > 0 {
+			// mismatch not at first letter
+			j = borderArr[j-1]
+		} else {
+			// mismatch at first letter
+			i += 1
+		}
+	}
+
 	return false
 }
 
