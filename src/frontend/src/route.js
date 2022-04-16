@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
-import Axios from "axios";
 
 import Landing from "./pages/Landing";
 import AddDisease from "./pages/AddDisease";
@@ -7,8 +6,6 @@ import DiseasePrediction from "./pages/DiseasePrediction";
 import DetailPrediction from "./pages/DetailPrediction";
 
 const RouteManager = () => {
-    Axios.defaults.withCredentials = true;
-
     return (
         <Router>
             <Switch>
