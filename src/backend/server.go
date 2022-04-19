@@ -58,6 +58,13 @@ func main() {
 	}
 	sm.BoyerMoore("a pattern matching algorithm", "rithm")
 	sm.BoyerMoore("abacaabadcabacabaabb", "abacab")
+
+	var check bool = sm.Regex("AGTC")
+	if check {
+		fmt.Println("Benar")
+	} else {
+		fmt.Println("Salah")
+	}
 	// Server
 	http.HandleFunc(getEnv("BASE_PORT")+"/", helloWorld)
 
