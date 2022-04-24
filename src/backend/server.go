@@ -111,6 +111,74 @@ func getDetailPrediction(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
+	setupResponse(&res, req)
+	
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	
+	string_body := string(body)
+
+	if strings.Split(string_body, ":")[0] != "" {
+
+		s1 := strings.Replace(string_body, "{", "", -1)
+		s2 := strings.Replace(s1, "}", "", -1)
+		s3 := strings.Replace(s2, `"`, "", -1)
+		data := strings.Split(s3, ",")
+
+		output := []HasilPrediksi{}
+
+		FilePath := "../../test/" + strings.Split(data[1], ":")[1]
+
+		buf, err := ioutil.ReadFile(FilePath)
+
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		isi := string(buf)
+
+		if sm.Regex(isi) {
+			outputisi := HasilPrediksi{
+				NamaPasien : strings.Split(data[0], ":")[1],
+				PenyakitPrediksi : strings.Split(data[2], ":")[1],
+				TanggalPrediksi : strings.Split(data[3], ":")[1],
+				TingkatKemiripan : 80,
+				Status : 1,
+			}
+			
+			output = append(output, outputisi)
+			
+			marshal, err := json.Marshal(output)
+			if err != nil {
+				fmt.Println(err)
+			}
+			
+			res.Write(marshal)
+		} else {
+			outputisi := HasilPrediksi{
+				NamaPasien : strings.Split(data[0], ":")[1],
+				PenyakitPrediksi : strings.Split(data[2], ":")[1],
+				TanggalPrediksi : strings.Split(data[3], ":")[1],
+				TingkatKemiripan : 0,
+				Status : -1,
+			}
+			
+			output = append(output, outputisi)
+			
+			marshal, err := json.Marshal(output)
+			if err != nil {
+				fmt.Println(err)
+			}
+			
+			res.Write(marshal)
+		}
+		
+	}
+}
+
 func main() {
 	sm.BoyerMoore("a pattern matching algorithm", "rithm")
 	sm.BoyerMoore("abacaabadcabacabaabb", "abacab")
@@ -123,6 +191,7 @@ func main() {
 	}
 	// Server
 	http.HandleFunc(getEnv("BASE_PORT")+"/get-detailprediction", getDetailPrediction)
+	http.HandleFunc(getEnv("BASE_PORT")+"/get-diseaseprediction", getDiseasePrediction)
 
 	fmt.Println("Starting server at port " + getEnv("BACKEND_PORT"))
 	if err := http.ListenAndServe(":"+getEnv("BACKEND_PORT"), nil); err != nil {

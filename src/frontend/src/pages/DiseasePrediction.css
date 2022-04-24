@@ -1,0 +1,45 @@
+#tesDNA {
+    width: 60%;
+    height: 400px;
+    margin: auto;
+    margin-top: 10%;
+    margin-bottom: 10%;
+    background-color: white;
+    border: 5px solid lightblue;
+    border-radius: 32px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+
+#tesDNA .column {
+    float: left;
+    height: 100%;
+    margin-bottom: 8%;
+}
+
+.side {
+    width: 25%;
+}
+  
+.middle {
+    width: 50%;
+}
+
+#hasilTes {
+    margin-top: 50px;
+}
+  
+#tesDNA .column .inputBox {
+    max-width: 75%;
+}
+
+.Same{
+    display:inline-block;
+}
+
+.tesDNA:after {
+content: "";
+display: table;
+clear: both;
+}
