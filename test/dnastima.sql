@@ -35,7 +35,7 @@ CREATE TABLE `hasilprediksi` (
   `NamaPasien` varchar(100) NOT NULL,
   `PenyakitPrediksi` varchar(100) NOT NULL,
   `TingkatKemiripan` int(11) NOT NULL,
-  `Status` bit(1) NOT NULL,
+  `Status` int(1) NOT NULL,
   PRIMARY KEY (`TanggalPrediksi`,`NamaPasien`,`PenyakitPrediksi`),
   KEY `PenyakitPrediksi` (`PenyakitPrediksi`),
   CONSTRAINT `hasilprediksi_ibfk_1` FOREIGN KEY (`PenyakitPrediksi`) REFERENCES `jenispenyakit` (`NamaPenyakit`)
@@ -48,6 +48,7 @@ CREATE TABLE `hasilprediksi` (
 
 LOCK TABLES `hasilprediksi` WRITE;
 /*!40000 ALTER TABLE `hasilprediksi` DISABLE KEYS */;
+INSERT INTO `hasilprediksi` VALUES ('2022-04-24','Aku','COVID-19',79,0),('2022-04-24','Siapa','COVID-19',99,1);
 /*!40000 ALTER TABLE `hasilprediksi` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -85,4 +86,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-16  3:02:14
+-- Dump completed on 2022-04-25  3:02:16
