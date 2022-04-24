@@ -16,13 +16,15 @@ const DetailPrediction = () => {
   }
 
   return (
-    <div>
-      <input type='text' placeholder='Input date or disease name'
+    <div id='tesDNA'>
+      <h3> Detail Prediksi DNA </h3>
+      <input type='text' placeholder='Input tanggal atau nama penyakit'
         onChange={(e) => {
           setInput(e.target.value)
         }}
       />
       <button onClick={getDetailPrediction}>Process</button>
+      <h3>Hasil</h3>
       <div>
         {predictionList.map((val, key) => {
           return (
