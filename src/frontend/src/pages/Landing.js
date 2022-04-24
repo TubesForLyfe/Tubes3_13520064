@@ -7,8 +7,9 @@ const Landing = () => {
     window.location.reload(true)
   }
   return (
-    <div>
-      <p>Welcome to DNA Application</p>
+    <div id='tesDNA'>
+      <h3>Welcome to DNA Application</h3>
+      <h4>By GuysNamanyaMauApa?</h4>
       <div onClick={reload}>
         <p><Link to="/add-disease">Add Disease</Link></p>
         <p><Link to="/disease-prediction">Disease Prediction</Link></p>
