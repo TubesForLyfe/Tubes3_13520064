@@ -12,3 +12,11 @@ body {
   background-color: #e4ea3c;
 }
 
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.margin-left-4 {
+  margin-left: 4px;
+}

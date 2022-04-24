@@ -19,18 +19,21 @@ const DetailPrediction = () => {
     <div>
       <input type='text' placeholder='Input date or disease name'
         onChange={(e) => {
-          setInput(e)
+          setInput(e.target.value)
         }}
       />
       <button onClick={getDetailPrediction}>Process</button>
       <div>
         {predictionList.map((val, key) => {
           return (
-            <div>
-              <p>{index}. {val.TanggalPrediksi} - {val.NamaPasien} - {val.PenyakitPrediksi} - {val.TingkatKemiripan} - </p>
-              {val.Status == 1 && <p>True</p>}
-              {val.Status == 0 && <p>False</p>}
-              {setIndex(index + 1)}
+            <div className='flex-row ContainerBody'>
+              <p>{index}.</p>
+              <p className='margin-left-4'>{val.TanggalPrediksi} -</p>
+              <p className='margin-left-4'>{val.NamaPasien} -</p>
+              <p className='margin-left-4'>{val.PenyakitPrediksi} -</p>
+              <p className='margin-left-4'>{val.TingkatKemiripan}% -</p>
+              {val.Status == 1 && <p className='margin-left-4'>True</p>}
+              {val.Status == 0 && <p className='margin-left-4'>False</p>}
             </div>
           )
         })}

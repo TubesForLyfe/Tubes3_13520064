@@ -13,6 +13,9 @@ const RouteManager = () => {
                 <Route path="/add-disease" component={AddDisease} />
                 <Route path="/detail-prediction" component={DetailPrediction} />
                 <Route path="/disease-prediction" component={DiseasePrediction} />
+                <Route path="*">
+                    <Redirect to="/" />
+                </Route>
             </Switch>
         </Router>
     )
