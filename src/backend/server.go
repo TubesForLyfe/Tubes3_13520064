@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"unicode"
+	"strconv"
 
 	sm "backend/stringMatching"
 
@@ -128,34 +130,128 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 		s1 := strings.Split(string_body, "------WebKitFormBoundary")
 		s1_dna := strings.Split(s1[1], "\n")
 		DNA := s1_dna[4]
+		DNA = strings.Map(func(r rune) rune {
+			if unicode.IsPrint(r) {
+				return r
+			}
+			return -1
+		}, DNA)
 		s1_nama := strings.Split(s1[2], "\n")
 		Nama := s1_nama[3]
+		Nama = strings.Map(func(r rune) rune {
+			if unicode.IsPrint(r) {
+				return r
+			}
+			return -1
+		}, Nama)
 		s1_penyakit := strings.Split(s1[3], "\n")
 		Penyakit := s1_penyakit[3]
+		Penyakit = strings.Map(func(r rune) rune {
+			if unicode.IsPrint(r) {
+				return r
+			}
+			return -1
+		}, Penyakit)
 		s1_tanggalsplit := strings.Split(s1[4], "\n")
 		s1_tanggal := strings.Replace(s1_tanggalsplit[3], ",", "", -1)
 		tanggalsplit := strings.Split(s1_tanggal, "/")
 		year := tanggalsplit[2][:len(tanggalsplit[2])-1]
-		Tanggal := year + "-" + tanggalsplit[0] +"-"+ tanggalsplit[1] 
+		Tanggal := year + "/" + tanggalsplit[0] +"/"+ tanggalsplit[1] 
+		Tanggal = strings.Map(func(r rune) rune {
+			if unicode.IsPrint(r) {
+				return r
+			}
+			return -1
+		}, Tanggal)
 
 
 		if sm.Regex(DNA) {
-			outputisi := HasilPrediksi{
-				NamaPasien : Nama,
-				PenyakitPrediksi : Penyakit,
-				TanggalPrediksi : Tanggal,
-				TingkatKemiripan : 80,
-				Status : 1,
-			}
 
-			output = append(output, outputisi)
-
-			marshal, err := json.Marshal(output)
+			db := openDatabase()
+			db_result, err := db.Query("SELECT DNA FROM jenispenyakit WHERE NamaPenyakit = '" + Penyakit + "'")
 			if err != nil {
-				fmt.Println(err)
+				panic(err.Error())
+			}
+			defer db_result.Close()
+
+			empty := true
+
+			var pDNA string;
+
+			for db_result.Next() {
+				db_result.Scan(&pDNA)
+				empty = false
 			}
 
-			res.Write(marshal)
+			if !empty {
+				Percentage := sm.Lcs(DNA, pDNA)
+				var stat int
+
+				if (Percentage > 80) {
+					stat = 1
+				} else {
+					stat = 0
+				}
+
+				db := openDatabase()
+				db_result, err := db.Query("INSERT INTO hasilprediksi VALUES ('"+ Tanggal +"','"+ Nama +"','"+ Penyakit +"','" + strconv.Itoa(Percentage) + "','" + strconv.Itoa(stat) +"')")
+				if err != nil {
+					outputisi := HasilPrediksi{
+						NamaPasien : Nama,
+						PenyakitPrediksi : Penyakit,
+						TanggalPrediksi : Tanggal,
+						TingkatKemiripan : Percentage,
+						Status : stat,
+					}
+	
+					output = append(output, outputisi)
+	
+					marshal, err := json.Marshal(output)
+					if err != nil {
+						fmt.Println(err)
+					}
+	
+					res.Write(marshal)
+					return
+				}
+
+				defer db_result.Close()
+
+				outputisi := HasilPrediksi{
+					NamaPasien : Nama,
+					PenyakitPrediksi : Penyakit,
+					TanggalPrediksi : Tanggal,
+					TingkatKemiripan : Percentage,
+					Status : stat,
+				}
+
+				output = append(output, outputisi)
+
+				marshal, err := json.Marshal(output)
+				if err != nil {
+					fmt.Println(err)
+				}
+
+				res.Write(marshal)
+			} else {
+				outputisi := HasilPrediksi{
+					NamaPasien : Nama,
+					PenyakitPrediksi : Penyakit,
+					TanggalPrediksi : Tanggal,
+					TingkatKemiripan : 0,
+					Status : -2,
+				}
+	
+				output = append(output, outputisi)
+	
+				marshal, err := json.Marshal(output)
+				if err != nil {
+					fmt.Println(err)
+				}
+	
+				res.Write(marshal)
+			}
+			
 		} else {
 
 			outputisi := HasilPrediksi{
@@ -203,12 +299,6 @@ func main() {
 	sm.BoyerMoore("a pattern matching algorithm", "rithm")
 	sm.BoyerMoore("abacaabadcabacabaabb", "abacab")
 
-	var check bool = sm.Regex("AGTC")
-	if check {
-		fmt.Println("Benar")
-	} else {
-		fmt.Println("Salah")
-	}
 	// Server
 	http.HandleFunc(getEnv("BASE_PORT")+"/get-detailprediction", getDetailPrediction)
 	http.HandleFunc(getEnv("BASE_PORT")+"/get-diseaseprediction", getDiseasePrediction)

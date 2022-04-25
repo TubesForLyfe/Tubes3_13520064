@@ -2,8 +2,6 @@ package string_matching
 
 import "fmt"
 import "regexp"
-import "strings"
-import "unicode"
 
 func Border(pattern string) []int {
 	// return size
@@ -114,14 +112,49 @@ func BoyerMoore(str1 string, str2 string) bool {
 	}
 }
 
-func Regex(str1 string) bool {
+func max(a int, b int) int{
+	if a > b {
+		return a;
+	} else {
+		return b;
+	}
+}
 
-	str1 = strings.Map(func(r rune) rune {
-        if unicode.IsPrint(r) {
-            return r
-        }
-        return -1
-    }, str1)
+func min(a int, b int) int{
+	if a < b {
+		return a;
+	} else {
+		return b;
+	}
+}
+
+
+func Lcs(str1 string, str2 string) int {
+	m := len(str1)
+	n := len(str2)
+	L := make([][]int, m+1)      // Make the outer slice and give it size 10
+	for i := 0; i < m+1; i ++ {
+		L[i] = make([]int, n+1)  // Make one inner slice per iteration and give it size 10
+		for j := 0; j < n+1; j++ {
+			if i == 0 || j == 0 {
+				L[i][j] = 0;
+			} else if str1[i-1] == str2[j-1] {
+				L[i][j] = L[i-1][j-1] + 1
+			} else {
+				L[i][j] = max(L[i-1][j], L[i][j-1])
+			}
+		}
+	}
+
+	longest := float64(min(m,n))
+
+	var percentage float64;
+	percentage = float64(L[m][n]) / longest
+
+	return int(percentage * 100);
+}
+
+func Regex(str1 string) bool {
 
 	if (len(str1) == 0) {
 		return false

@@ -33,21 +33,21 @@ const DiseasePrediction = () => {
           <h3> Tes DNA </h3>
           <div className = "column side">
             <p>Nama Penguna:</p>
-            <input className="inputBox" type='text' placeholder='Nama pengguna...' 
+            <input className="inputBox" type='text' placeholder='Nama pengguna...' required 
             onChange={(e) => {
               setInputName(e.target.value)
             }}></input>
           </div>
           <div className = "column middle">
             <p>Sequence DNA:</p>
-            <input className="inputBox" type="file" accept=".txt"
+            <input className="inputBox" type="file" accept=".txt" required
             onChange={(e) => {
               setInputFile(e.target.files[0])
             }}></input>
           </div>
           <div className = "column side">
             <p>Prediksi Penyakit:</p>
-            <input className="inputBox" type='text' placeholder='Nama Penyakit...'
+            <input className="inputBox" type='text' placeholder='Nama Penyakit...' required
             onChange={(e) => {
               setInputPenyakit(e.target.value)
             }}></input>
@@ -61,7 +61,7 @@ const DiseasePrediction = () => {
           {hasilTes.map((val, key) => {
             return (
               <div>
-              {val.Status !== -1 &&
+              {(val.Status === 0 || val.Status === 1)&&
                  <div>
                 <p className="Same"> {val.TanggalPrediksi} -</p>
                 <p className="Same">&nbsp; {val.NamaPasien} -</p>
@@ -73,6 +73,12 @@ const DiseasePrediction = () => {
               } 
               {val.Status === -1 &&
                 <p className="Same">DNA Tidak Valid!</p>
+              }
+              {val.Status === -2 &&
+                <p className="Same">Penyakit Tidak Ditemukan</p>
+              }
+              {val.Status === -3 &&
+                <p className="Same">Penyakit Tidak Ditemukan</p>
               }
               </div>
             )
