@@ -343,6 +343,8 @@ func main() {
 	sm.BoyerMoore("a pattern matching algorithm", "rithm")
 	sm.BoyerMoore("abacaabadcabacabaabb", "abacab")
 
+	fmt.Println(sm.Lcs("aabbccdddeeefff", "aaccddd"))
+
 	// Server
 	http.HandleFunc(getEnv("BASE_PORT")+"/get-detailprediction", getDetailPrediction)
 	http.HandleFunc(getEnv("BASE_PORT")+"/get-diseaseprediction", getDiseasePrediction)

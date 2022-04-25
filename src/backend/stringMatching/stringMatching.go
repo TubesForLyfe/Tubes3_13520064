@@ -124,22 +124,25 @@ func max(a int, b int) int{
 func Lcs(str1 string, str2 string) int {
 	m := len(str1)
 	n := len(str2)
-	L := make([][]int, m+1)      // Make the outer slice and give it size 10
+	L := make([][]int, m+1)   
+	
+	result := 0
 	for i := 0; i < m+1; i ++ {
-		L[i] = make([]int, n+1)  // Make one inner slice per iteration and give it size 10
+		L[i] = make([]int, n+1)  
 		for j := 0; j < n+1; j++ {
 			if i == 0 || j == 0 {
 				L[i][j] = 0;
 			} else if str1[i-1] == str2[j-1] {
 				L[i][j] = L[i-1][j-1] + 1
+				result = max(result,L[i][j]);
 			} else {
-				L[i][j] = max(L[i-1][j], L[i][j-1])
+				L[i][j] = 0;
 			}
 		}
 	}
 
 	var percentage float64;
-	percentage = float64(L[m][n]) / float64(n)
+	percentage = float64(result) / float64(n)
 
 	return int(percentage * 100);
 }
