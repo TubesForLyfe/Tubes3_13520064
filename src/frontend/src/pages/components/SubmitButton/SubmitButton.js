@@ -23,7 +23,7 @@ const SubmitButton = () => {
                     namaPenyakit: namapenyakit,
                     DNA: content,
                   }).then((response) => {
-                    console.log("BERHASIL")
+                    console.log(response.data)
                   })
 
 

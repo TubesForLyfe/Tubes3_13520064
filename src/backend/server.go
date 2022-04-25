@@ -8,9 +8,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"unicode"
-	"strconv"
 
 	sm "backend/stringMatching"
 
@@ -172,14 +172,13 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 		s1_tanggal := strings.Replace(s1_tanggalsplit[3], ",", "", -1)
 		tanggalsplit := strings.Split(s1_tanggal, "/")
 		year := tanggalsplit[2][:len(tanggalsplit[2])-1]
-		Tanggal := year + "/" + tanggalsplit[0] +"/"+ tanggalsplit[1] 
+		Tanggal := year + "/" + tanggalsplit[0] + "/" + tanggalsplit[1]
 		Tanggal = strings.Map(func(r rune) rune {
 			if unicode.IsPrint(r) {
 				return r
 			}
 			return -1
 		}, Tanggal)
-
 
 		if sm.Regex(DNA) {
 
@@ -192,7 +191,7 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 
 			empty := true
 
-			var pDNA string;
+			var pDNA string
 
 			for db_result.Next() {
 				db_result.Scan(&pDNA)
@@ -203,30 +202,30 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 				Percentage := sm.Lcs(DNA, pDNA)
 				var stat int
 
-				if (Percentage > 80) {
+				if Percentage > 80 {
 					stat = 1
 				} else {
 					stat = 0
 				}
 
 				db := openDatabase()
-				db_result, err := db.Query("INSERT INTO hasilprediksi VALUES ('"+ Tanggal +"','"+ Nama +"','"+ Penyakit +"','" + strconv.Itoa(Percentage) + "','" + strconv.Itoa(stat) +"')")
+				db_result, err := db.Query("INSERT INTO hasilprediksi VALUES ('" + Tanggal + "','" + Nama + "','" + Penyakit + "','" + strconv.Itoa(Percentage) + "','" + strconv.Itoa(stat) + "')")
 				if err != nil {
 					outputisi := HasilPrediksi{
-						NamaPasien : Nama,
-						PenyakitPrediksi : Penyakit,
-						TanggalPrediksi : Tanggal,
-						TingkatKemiripan : Percentage,
-						Status : stat,
+						NamaPasien:       Nama,
+						PenyakitPrediksi: Penyakit,
+						TanggalPrediksi:  Tanggal,
+						TingkatKemiripan: Percentage,
+						Status:           stat,
 					}
-	
+
 					output = append(output, outputisi)
-	
+
 					marshal, err := json.Marshal(output)
 					if err != nil {
 						fmt.Println(err)
 					}
-	
+
 					res.Write(marshal)
 					return
 				}
@@ -234,11 +233,11 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 				defer db_result.Close()
 
 				outputisi := HasilPrediksi{
-					NamaPasien : Nama,
-					PenyakitPrediksi : Penyakit,
-					TanggalPrediksi : Tanggal,
-					TingkatKemiripan : Percentage,
-					Status : stat,
+					NamaPasien:       Nama,
+					PenyakitPrediksi: Penyakit,
+					TanggalPrediksi:  Tanggal,
+					TingkatKemiripan: Percentage,
+					Status:           stat,
 				}
 
 				output = append(output, outputisi)
@@ -251,31 +250,31 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 				res.Write(marshal)
 			} else {
 				outputisi := HasilPrediksi{
-					NamaPasien : Nama,
-					PenyakitPrediksi : Penyakit,
-					TanggalPrediksi : Tanggal,
-					TingkatKemiripan : 0,
-					Status : -2,
+					NamaPasien:       Nama,
+					PenyakitPrediksi: Penyakit,
+					TanggalPrediksi:  Tanggal,
+					TingkatKemiripan: 0,
+					Status:           -2,
 				}
-	
+
 				output = append(output, outputisi)
-	
+
 				marshal, err := json.Marshal(output)
 				if err != nil {
 					fmt.Println(err)
 				}
-	
+
 				res.Write(marshal)
 			}
-			
+
 		} else {
 
 			outputisi := HasilPrediksi{
-				NamaPasien : Nama,
-				PenyakitPrediksi : Penyakit,
-				TanggalPrediksi : Tanggal,
-				TingkatKemiripan : 0,
-				Status : -1,
+				NamaPasien:       Nama,
+				PenyakitPrediksi: Penyakit,
+				TanggalPrediksi:  Tanggal,
+				TingkatKemiripan: 0,
+				Status:           -1,
 			}
 
 			output = append(output, outputisi)
@@ -292,22 +291,51 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 }
 
 func submitDisease(res http.ResponseWriter, req *http.Request) {
-	// setupResponse(&res, req)
+	setupResponse(&res, req)
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
-	// decoder := json.NewDecoder(req.Body)
+	//Convert the body to type string
+	string_body := string(body)
+	fmt.Println("HERE")
+	if strings.Split(string_body, ":")[0] != "" {
+		// remove curly bracket
+		string_body = strings.Replace(string_body, "{", "", -1)
+		string_body = strings.Replace(string_body, "}", "", -1)
 
-	// var data Penyakit
-	// err := decoder.Decode(&data)
-	// if err != nil {
-	// 	panic(err)
-	// }
+		//remove quote mark
+		string_body = strings.Replace(string_body, `"`, "", -1)
+		arr := strings.Split(string_body, ",")
 
-	// // NamaPenyakit := data.NamaPenyakit
-	// // DNA := data.DNA
+		namaPenyakit := strings.Split(arr[0], ":")[1]
+		DNA := strings.Split(arr[1], ":")[1]
+		fmt.Println(namaPenyakit)
+		fmt.Println(DNA)
 
-	// db := openDatabase()
-	// // query := ("INSERT INTO jenispenyakit VALUES(" + "'" + NamaPenyakit + "', '" + DNA + "')")
-	// query := ("INSERT INTO jenispenyakit VALUES('test', 'test')")
+		if sm.Regex(DNA) {
+
+			db := openDatabase()
+			// query := ("INSERT INTO jenispenyakit VALUES(" + "'" + NamaPenyakit + "', '" + DNA + "')")
+			query := ("INSERT INTO jenispenyakit VALUES('" + namaPenyakit + "', '" + DNA + "')")
+			result, err := db.Query(query)
+			if err != nil {
+				fmt.Fprintf(res, "failed duplicate")
+				return
+			}
+			defer result.Close()
+
+			fmt.Fprintf(res, "success")
+		} else {
+			fmt.Fprintf(res, "failed regex")
+		}
+	}
+
+	// NamaPenyakit := data.NamaPenyakit
+	// DNA := data.DNA
+	// fmt.Print(NamaPenyakit)
+	// fmt.Print(DNA)
 
 }
 
