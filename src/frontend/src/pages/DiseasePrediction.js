@@ -6,19 +6,22 @@ import Axios from 'axios'
 
 const DiseasePrediction = () => {
   const [inputName, setInputName] = useState('');
-  const [inputFile, setInputFile] = useState('');
+  const [inputFile, setInputFile] = useState();
   const [inputPenyakit, setInputPenyakit] = useState('');
 
   const [hasilTes, setHasilTes] = useState([]);
 
   const getDiseasePrediction = (e) => {
     e.preventDefault();
-    Axios.post(`${process.env.REACT_APP_DNA_API}/get-diseaseprediction`, {
-      inputName: inputName,
-      inputFile: inputFile,
-      inputPenyakit: inputPenyakit,
-      tanggal : new Date().toLocaleString().split(" ")[0],
-    }).then((response) => {
+
+    const formData = new FormData();
+    formData.append('file', inputFile);
+    formData.append('inputName', inputName);
+    formData.append('inputPenyakit', inputPenyakit);
+    formData.append('tanggal', new Date().toLocaleString().split(" ")[0]);
+
+    Axios.post(`${process.env.REACT_APP_DNA_API}/get-diseaseprediction`, formData)
+    .then((response) => {
       setHasilTes(response.data)
     })
   }
@@ -39,7 +42,7 @@ const DiseasePrediction = () => {
             <p>Sequence DNA:</p>
             <input className="inputBox" type="file" accept=".txt"
             onChange={(e) => {
-              setInputFile(e.target.files[0].name)
+              setInputFile(e.target.files[0])
             }}></input>
           </div>
           <div className = "column side">
