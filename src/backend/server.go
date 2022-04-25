@@ -101,7 +101,23 @@ func getDetailPrediction(res http.ResponseWriter, req *http.Request) {
 				result = append(result, hasil)
 			}
 		} else {
+			// Db query for hasilprediksi table
+			db_result, err := db.Query("SELECT * FROM hasilprediksi WHERE TanggalPrediksi = '" + input + "' OR PenyakitPrediksi = '" + input + "'")
+			if err != nil {
+				panic(err.Error())
+			}
 
+			for db_result.Next() {
+				var hasil HasilPrediksi
+
+				// Get hasil for each row
+				err = db_result.Scan(&hasil.TanggalPrediksi, &hasil.NamaPasien, &hasil.PenyakitPrediksi, &hasil.TingkatKemiripan, &hasil.Status)
+				if err != nil {
+					panic(err.Error()) // proper error handling instead of panic in your app
+				}
+				// Append hasil to result
+				result = append(result, hasil)
+			}
 		}
 		// Convert result to []byte
 		marshal, err := json.Marshal(result)

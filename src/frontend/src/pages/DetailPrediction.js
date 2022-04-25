@@ -3,7 +3,6 @@ import Axios from 'axios'
 
 const DetailPrediction = () => {
   const [input, setInput] = useState('');
-  const [index, setIndex] = useState(1);
   const [predictionList, setPredictionList] = useState([]);
 
   const getDetailPrediction = (e) => {
@@ -11,6 +10,11 @@ const DetailPrediction = () => {
     Axios.post(`${process.env.REACT_APP_DNA_API}/get-detailprediction`, {
       input: input
     }).then((response) => {
+      let index = 1;
+      for (let i = 0; i < response.data.length; i++) {
+        response.data[i].index = index;
+        index++;
+      }
       setPredictionList(response.data)
     })
   }
@@ -29,7 +33,7 @@ const DetailPrediction = () => {
         {predictionList.map((val, key) => {
           return (
             <div className='flex-row ContainerBody'>
-              <p>{index}.</p>
+              <p>{val.index}.</p>
               <p className='margin-left-4'>{val.TanggalPrediksi} -</p>
               <p className='margin-left-4'>{val.NamaPasien} -</p>
               <p className='margin-left-4'>{val.PenyakitPrediksi} -</p>
