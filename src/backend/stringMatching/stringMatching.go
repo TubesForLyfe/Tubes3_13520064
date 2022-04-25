@@ -2,6 +2,8 @@ package string_matching
 
 import "fmt"
 import "regexp"
+import "strings"
+import "unicode"
 
 func Border(pattern string) []int {
 	// return size
@@ -113,18 +115,23 @@ func BoyerMoore(str1 string, str2 string) bool {
 }
 
 func Regex(str1 string) bool {
-	
+
+	str1 = strings.Map(func(r rune) rune {
+        if unicode.IsPrint(r) {
+            return r
+        }
+        return -1
+    }, str1)
+
+	if (len(str1) == 0) {
+		return false
+	}
+
 	var regex, err = regexp.Compile(`^[AGTC]*$`)
 
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
-	var res1 = regex.FindAllString(str1, 2)
-
-	if len(res1) > 0 {
-		return true
-	} else {
-		return false
-	}
+	return regex.MatchString(str1) 
 }

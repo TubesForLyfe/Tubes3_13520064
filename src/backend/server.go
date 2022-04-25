@@ -123,28 +123,25 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 
 	if strings.Split(string_body, ":")[0] != "" {
 
-		s1 := strings.Replace(string_body, "{", "", -1)
-		s2 := strings.Replace(s1, "}", "", -1)
-		s3 := strings.Replace(s2, `"`, "", -1)
-		data := strings.Split(s3, ",")
-
 		output := []HasilPrediksi{}
 
-		FilePath := "../../test/" + strings.Split(data[1], ":")[1]
+		s1 := strings.Split(string_body, "------WebKitFormBoundary")
+		s1_dna := strings.Split(s1[1], "\n")
+		DNA := s1_dna[4]
+		s1_nama := strings.Split(s1[2], "\n")
+		Nama := s1_nama[3]
+		s1_penyakit := strings.Split(s1[3], "\n")
+		Penyakit := s1_penyakit[3]
+		s1_tanggalsplit := strings.Split(s1[4], "\n")
+		s1_tanggal := strings.Replace(s1_tanggalsplit[3], ",", "", -1)
+		Tanggal := s1_tanggal
 
-		buf, err := ioutil.ReadFile(FilePath)
 
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		isi := string(buf)
-
-		if sm.Regex(isi) {
+		if sm.Regex(DNA) {
 			outputisi := HasilPrediksi{
-				NamaPasien : strings.Split(data[0], ":")[1],
-				PenyakitPrediksi : strings.Split(data[2], ":")[1],
-				TanggalPrediksi : strings.Split(data[3], ":")[1],
+				NamaPasien : Nama,
+				PenyakitPrediksi : Penyakit,
+				TanggalPrediksi : Tanggal,
 				TingkatKemiripan : 80,
 				Status : 1,
 			}
@@ -158,10 +155,11 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 			
 			res.Write(marshal)
 		} else {
+
 			outputisi := HasilPrediksi{
-				NamaPasien : strings.Split(data[0], ":")[1],
-				PenyakitPrediksi : strings.Split(data[2], ":")[1],
-				TanggalPrediksi : strings.Split(data[3], ":")[1],
+				NamaPasien : Nama,
+				PenyakitPrediksi : Penyakit,
+				TanggalPrediksi : Tanggal,
 				TingkatKemiripan : 0,
 				Status : -1,
 			}
