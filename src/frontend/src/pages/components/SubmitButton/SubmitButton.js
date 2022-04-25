@@ -40,7 +40,7 @@ const SubmitButton = () => {
     return (
 
         <div class = "SubmitButton colMargin">
-            <button id="submitButton" onClick={submitDisease}>SUBMIT</button>
+            <button id="submitButton" onClick={submitDisease}>Tambahkan Penyakit</button>
         </div>
 
     )
