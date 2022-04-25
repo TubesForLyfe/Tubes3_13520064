@@ -9,9 +9,11 @@ const Container = () => {
 
     return (
 
-        <div class = "ContainerBody">
+        <div class = "ContainerBody ">
+            <h3>Input Penyakit</h3>
             <InputBoxPenyakit/>
             <UploadSequence/>
+            <br/>
             <SubmitButton/>
         </div>
 

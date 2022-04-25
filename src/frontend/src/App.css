@@ -10,6 +10,8 @@ body {
   width: 100%;
   max-width: 1000px;
   background-color: #e4ea3c;
+
+  font-family: 'Open Sans', sans-serif;
 }
 
 .flex-row {

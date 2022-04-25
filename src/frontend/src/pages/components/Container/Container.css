@@ -1,4 +1,14 @@
 .ContainerBody {
+    position: relative;
+    width: 60%;
+    height: 400px;
+    margin: auto;
+    margin-top: 10%;
+    margin-bottom: 10%;
     background-color: white;
-    border: solid black;
+    border: 5px solid lightblue;
+    border-radius: 32px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
 }
