@@ -120,14 +120,6 @@ func max(a int, b int) int{
 	}
 }
 
-func min(a int, b int) int{
-	if a < b {
-		return a;
-	} else {
-		return b;
-	}
-}
-
 
 func Lcs(str1 string, str2 string) int {
 	m := len(str1)
@@ -146,10 +138,8 @@ func Lcs(str1 string, str2 string) int {
 		}
 	}
 
-	longest := float64(min(m,n))
-
 	var percentage float64;
-	percentage = float64(L[m][n]) / longest
+	percentage = float64(L[m][n]) / float64(n)
 
 	return int(percentage * 100);
 }
