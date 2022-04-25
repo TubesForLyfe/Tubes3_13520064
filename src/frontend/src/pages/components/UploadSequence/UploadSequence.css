@@ -1,3 +1,20 @@
-input[type="file"] {
-    
+#inputPenyakitForm > input[type='file'] { 
+     font-size: 0px;
+
 }
+#inputPenyakitForm > ::file-selector-button { 
+    font-size: 1rem;
+
+ }
+
+ ::placeholder {
+    color:red;
+    opacity: 1;
+    }
+
+ #fileChosen {
+     font-size: 0.8rem;
+ }
+
+
+

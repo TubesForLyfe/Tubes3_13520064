@@ -2,17 +2,18 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"io/ioutil"
 	"strings"
-	"encoding/json"
+
+	sm "backend/stringMatching"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
-	sm "backend/stringMatching"
 )
 
 type Penyakit struct {
@@ -21,11 +22,11 @@ type Penyakit struct {
 }
 
 type HasilPrediksi struct {
-	TanggalPrediksi string
-	NamaPasien string
+	TanggalPrediksi  string
+	NamaPasien       string
 	PenyakitPrediksi string
 	TingkatKemiripan int
-	Status int
+	Status           int
 }
 
 func getEnv(key string) string {
@@ -50,10 +51,9 @@ func openDatabase() *sql.DB {
 
 func setupResponse(w *http.ResponseWriter, req *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-    (*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-    (*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 }
-
 
 func getDetailPrediction(res http.ResponseWriter, req *http.Request) {
 	setupResponse(&res, req)
@@ -61,14 +61,14 @@ func getDetailPrediction(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	
+
 	//Convert the body to type string
 	string_body := string(body)
 	if strings.Split(string_body, ":")[0] != "" {
-		data := strings.Split(string_body, ":")[1] 
+		data := strings.Split(string_body, ":")[1]
 		input := ""
 		two_arguments := false
-		for i := 1; i < len(data) - 2; i++ {
+		for i := 1; i < len(data)-2; i++ {
 			input += string(data[i])
 			if string(data[i]) == " " {
 				two_arguments = true
@@ -113,12 +113,12 @@ func getDetailPrediction(res http.ResponseWriter, req *http.Request) {
 
 func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 	setupResponse(&res, req)
-	
+
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	
+
 	string_body := string(body)
 
 	if strings.Split(string_body, ":")[0] != "" {
@@ -145,14 +145,14 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 				TingkatKemiripan : 80,
 				Status : 1,
 			}
-			
+
 			output = append(output, outputisi)
-			
+
 			marshal, err := json.Marshal(output)
 			if err != nil {
 				fmt.Println(err)
 			}
-			
+
 			res.Write(marshal)
 		} else {
 
@@ -163,18 +163,38 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 				TingkatKemiripan : 0,
 				Status : -1,
 			}
-			
+
 			output = append(output, outputisi)
-			
+
 			marshal, err := json.Marshal(output)
 			if err != nil {
 				fmt.Println(err)
 			}
-			
+
 			res.Write(marshal)
 		}
-		
+
 	}
+}
+
+func submitDisease(res http.ResponseWriter, req *http.Request) {
+	// setupResponse(&res, req)
+
+	// decoder := json.NewDecoder(req.Body)
+
+	// var data Penyakit
+	// err := decoder.Decode(&data)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// // NamaPenyakit := data.NamaPenyakit
+	// // DNA := data.DNA
+
+	// db := openDatabase()
+	// // query := ("INSERT INTO jenispenyakit VALUES(" + "'" + NamaPenyakit + "', '" + DNA + "')")
+	// query := ("INSERT INTO jenispenyakit VALUES('test', 'test')")
+
 }
 
 func main() {
@@ -190,6 +210,7 @@ func main() {
 	// Server
 	http.HandleFunc(getEnv("BASE_PORT")+"/get-detailprediction", getDetailPrediction)
 	http.HandleFunc(getEnv("BASE_PORT")+"/get-diseaseprediction", getDiseasePrediction)
+	http.HandleFunc(getEnv("BASE_PORT")+"/submitDisease", submitDisease)
 
 	fmt.Println("Starting server at port " + getEnv("BACKEND_PORT"))
 	if err := http.ListenAndServe(":"+getEnv("BACKEND_PORT"), nil); err != nil {

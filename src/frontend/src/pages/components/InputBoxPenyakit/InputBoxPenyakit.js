@@ -5,10 +5,10 @@ const InputBoxPenyakit = () => {
 
     return (
 
-        <div class = "Frame">
+        <div class = "InputBoxPenyakit colMargin">
             Nama penyakit:
             <form>
-                <input type="text"/>
+                <input id="fieldInputPenyakit" type="text"/>
             </form>
         </div>
 
