@@ -134,7 +134,9 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 		Penyakit := s1_penyakit[3]
 		s1_tanggalsplit := strings.Split(s1[4], "\n")
 		s1_tanggal := strings.Replace(s1_tanggalsplit[3], ",", "", -1)
-		Tanggal := s1_tanggal
+		tanggalsplit := strings.Split(s1_tanggal, "/")
+		year := tanggalsplit[2][:len(tanggalsplit[2])-1]
+		Tanggal := year + "-" + tanggalsplit[0] +"-"+ tanggalsplit[1] 
 
 
 		if sm.Regex(DNA) {
