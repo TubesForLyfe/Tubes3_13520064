@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import "./UploadSequence.css"
 
 
 
-let fileValid = false
-const UploadSequence = () => {
+
+const UploadSequence = (props) => {
+    let fileValid = false
+    var submitButton = document.getElementById("submitButton")
+
     const [labelName, setlabelName] = useState("Tidak ada file dipilih")// label below upload button
 
 
@@ -18,16 +21,21 @@ const UploadSequence = () => {
             if (getExtension(fileName) === "txt") {
                 fileValid = true
                 setlabelName(fileName)
+                
             }
             else {
                 fileValid = false
                 setlabelName("Ekstensi file tidak valid")
+                console.log(submitButton.disabled)
             }
         }
         else {
             fileValid = false
             setlabelName("Tidak ada file dipilih")
+            console.log(submitButton.disabled)
         }
+        console.log(fileValid)
+        props.func(fileValid)
         
     }
 
@@ -36,7 +44,7 @@ const UploadSequence = () => {
 
         <div class = "UploadSequence colMargin">
             Upload Sequence:
-            <form id="inputPenyakitForm">
+            <form id="uploadSequenceForm">
                 <input id="filePenyakit" onChange={ setHandler } type="file" accept=".txt"/>
                 <br/>
                 <label id="fileChosen">
@@ -52,4 +60,3 @@ const UploadSequence = () => {
 
 }
 export default UploadSequence
-export const isFileValid = fileValid

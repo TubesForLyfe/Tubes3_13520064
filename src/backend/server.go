@@ -291,6 +291,7 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 }
 
 func submitDisease(res http.ResponseWriter, req *http.Request) {
+	fmt.Println("HERE1")
 	setupResponse(&res, req)
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
@@ -321,14 +322,34 @@ func submitDisease(res http.ResponseWriter, req *http.Request) {
 			query := ("INSERT INTO jenispenyakit VALUES('" + namaPenyakit + "', '" + DNA + "')")
 			result, err := db.Query(query)
 			if err != nil {
-				fmt.Fprintf(res, "failed duplicate")
+				// fmt.Fprintf(res, "failed duplicate")
+				result1, _ := db.Query("SELECT DNA FROM jenispenyakit WHERE NamaPenyakit = '" + namaPenyakit + "'")
+				result2, _ := db.Query("SELECT NamaPenyakit FROM jenispenyakit WHERE DNA = '" + DNA + "'")
+				empty1, empty2 := true, true
+
+				for result1.Next() {
+					empty1 = false
+					break
+				}
+				for result2.Next() {
+					empty2 = false
+					break
+				}
+				if empty1 && empty2 {
+					fmt.Fprintf(res, "Unexpected Error")
+				} else if !empty1 {
+					fmt.Fprintf(res, "Nama peyakit sudah ada dalam database")
+				} else if !empty2 {
+					fmt.Fprintf(res, "untai DNA peyakit sudah ada dalam database")
+				}
 				return
+
 			}
 			defer result.Close()
 
-			fmt.Fprintf(res, "success")
+			fmt.Fprintf(res, "Penyakit berhasil ditambahkan ke dalam database")
 		} else {
-			fmt.Fprintf(res, "failed regex")
+			fmt.Fprintf(res, "Untai DNA tidak valid")
 		}
 	}
 

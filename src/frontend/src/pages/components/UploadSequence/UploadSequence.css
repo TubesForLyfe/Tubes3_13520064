@@ -1,8 +1,8 @@
-#inputPenyakitForm > input[type='file'] { 
+#uploadSequenceForm > input[type='file'] { 
      font-size: 0px;
 
 }
-#inputPenyakitForm > ::file-selector-button { 
+#uploadSequenceForm > ::file-selector-button { 
     font-size: 1rem;
 
  }

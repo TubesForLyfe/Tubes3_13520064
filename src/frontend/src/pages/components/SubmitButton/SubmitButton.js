@@ -23,6 +23,8 @@ const SubmitButton = () => {
                     namaPenyakit: namapenyakit,
                     DNA: content,
                   }).then((response) => {
+                    var elmt = document.getElementById("message")
+                    elmt.textContent = response.data
                     console.log(response.data)
                   })
 
