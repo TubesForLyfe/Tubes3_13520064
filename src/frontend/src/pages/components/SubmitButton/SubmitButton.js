@@ -7,6 +7,8 @@ import Axios from 'axios'
 const SubmitButton = () => {
 
     const submitDisease = (event) => {
+        var elmt = document.getElementById("message")
+        elmt.textContent = "Loading ..."
         var file = document.getElementById('filePenyakit').files[0]
         var namapenyakit = document.getElementById('fieldInputPenyakit').value
         if (file) {
@@ -22,8 +24,7 @@ const SubmitButton = () => {
                 Axios.post(`${process.env.REACT_APP_DNA_API}/submitDisease`, {
                     namaPenyakit: namapenyakit,
                     DNA: content,
-                  }).then((response) => {
-                    var elmt = document.getElementById("message")
+                  }).then((response) => {         
                     elmt.textContent = response.data
                     console.log(response.data)
                   })
@@ -46,9 +47,7 @@ const SubmitButton = () => {
         </div>
 
     )
-
-    
-
-
 }
-export default SubmitButton
+
+
+export default SubmitButton;

@@ -173,6 +173,7 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 
 	if strings.Split(string_body, ":")[0] != "" {
 
+		db := openDatabase()
 		output := []HasilPrediksi{}
 
 		s1 := strings.Split(string_body, "------WebKitFormBoundary")
@@ -214,7 +215,6 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 
 		if sm.Regex(DNA) {
 
-			db := openDatabase()
 			db_result, err := db.Query("SELECT DNA FROM jenispenyakit WHERE NamaPenyakit = '" + Penyakit + "'")
 			if err != nil {
 				panic(err.Error())
@@ -231,6 +231,28 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 			}
 
 			if !empty {
+
+				if sm.KMP(pDNA, DNA) {
+					outputisi := HasilPrediksi{
+						NamaPasien:       Nama,
+						PenyakitPrediksi: Penyakit,
+						TanggalPrediksi:  Tanggal,
+						TingkatKemiripan: 100,
+						Status:           1,
+					}
+	
+					output = append(output, outputisi)
+	
+					marshal, err := json.Marshal(output)
+					if err != nil {
+						fmt.Println(err)
+					}
+	
+					res.Write(marshal)
+					defer db.Close()
+					return
+				}
+
 				Percentage := sm.Lcs(DNA, pDNA)
 				var stat int
 
@@ -259,6 +281,7 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 					}
 
 					res.Write(marshal)
+					defer db.Close()
 					return
 				}
 
@@ -318,6 +341,8 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 
 			res.Write(marshal)
 		}
+
+		defer db.Close()
 	}
 }
 
@@ -373,10 +398,13 @@ func submitDisease(res http.ResponseWriter, req *http.Request) {
 				} else if !empty2 {
 					fmt.Fprintf(res, "untai DNA peyakit sudah ada dalam database")
 				}
+
+				defer db.Close()
 				return
 
 			}
 			defer result.Close()
+			defer db.Close()
 
 			fmt.Fprintf(res, "Penyakit berhasil ditambahkan ke dalam database")
 		} else {
@@ -392,8 +420,12 @@ func submitDisease(res http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	sm.BoyerMoore("a pattern matching algorithm", "rithm")
-	sm.BoyerMoore("abacaabadcabacabaabb", "abacab")
+
+	fmt.Println(sm.BoyerMoore("a pattern matching algorithm", "rithm"))
+	fmt.Println(sm.KMP("rithm", "a pattern matching algorithm"))
+
+	fmt.Println(sm.BoyerMoore("abacaabadcabacabaabb", "abacab"))
+	fmt.Println(sm.KMP("abacab", "abacaabadcabacabaabb"))
 
 	fmt.Println(sm.RegexSearch("abcd", "abcdefghi"))
 

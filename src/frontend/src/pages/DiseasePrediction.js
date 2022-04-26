@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import './DiseasePrediction.css'
+import UploadSequence from "../UploadSequence/UploadSequence"
 import Axios from 'axios'
+
 
 
 
@@ -20,10 +22,18 @@ const DiseasePrediction = () => {
     formData.append('inputPenyakit', inputPenyakit);
     formData.append('tanggal', new Date().toLocaleString().split(" ")[0]);
 
-    Axios.post(`${process.env.REACT_APP_DNA_API}/get-diseaseprediction`, formData)
-    .then((response) => {
-      setHasilTes(response.data)
-    })
+    if (inputName !== "") {
+        Axios.post(`${process.env.REACT_APP_DNA_API}/get-diseaseprediction`, formData)
+      .then((response) => {
+        setHasilTes(response.data)
+        console.log(hasilTes)
+      })
+    } else {
+      let arr = [{Status:-4}]
+      console.log(arr)
+      setHasilTes(arr)
+    }
+    
   }
 
   return (
@@ -40,10 +50,7 @@ const DiseasePrediction = () => {
           </div>
           <div className = "column middle">
             <p>Sequence DNA:</p>
-            <input className="inputBox" type="file" accept=".txt" required
-            onChange={(e) => {
-              setInputFile(e.target.files[0])
-            }}></input>
+            <InputBoxPenyakit func={(arg) => setHandler_nama(arg)}/>
           </div>
           <div className = "column side">
             <p>Prediksi Penyakit:</p>
@@ -79,6 +86,9 @@ const DiseasePrediction = () => {
               }
               {val.Status === -3 &&
                 <p className="Same">Penyakit Tidak Ditemukan</p>
+              }
+              {val.Status === -4 &&
+                <p className="Same">Nama Tidak Boleh Kosong</p>
               }
               </div>
             )
