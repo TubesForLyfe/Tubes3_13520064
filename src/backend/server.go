@@ -42,7 +42,7 @@ func getEnv(key string) string {
 
 func openDatabase() *sql.DB {
 	// Open database connection.
-	db, err := sql.Open("mysql", getEnv("DATABASE_USERNAME")+":"+getEnv("DATABASE_PASSWORD")+"@tcp("+getEnv("DATABASE_PORT")+")/"+getEnv("DATABASE_NAME"))
+	db, err := sql.Open("mysql", os.Getenv("DATABASE_USERNAME")+":"+os.Getenv("DATABASE_PASSWORD")+"@tcp("+os.Getenv("DATABASE_PORT")+")/"+os.Getenv("DATABASE_NAME"))
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -398,12 +398,12 @@ func main() {
 	fmt.Println(sm.RegexSearch("abcd", "abcdefghi"))
 
 	// Server
-	http.HandleFunc(getEnv("BASE_PORT")+"/get-detailprediction", getDetailPrediction)
-	http.HandleFunc(getEnv("BASE_PORT")+"/get-diseaseprediction", getDiseasePrediction)
-	http.HandleFunc(getEnv("BASE_PORT")+"/submitDisease", submitDisease)
+	http.HandleFunc("/get-detailprediction", getDetailPrediction)
+	http.HandleFunc("/get-diseaseprediction", getDiseasePrediction)
+	http.HandleFunc("/submitDisease", submitDisease)
 
-	fmt.Println("Starting server at port " + getEnv("BACKEND_PORT"))
-	if err := http.ListenAndServe(":"+getEnv("BACKEND_PORT"), nil); err != nil {
+	fmt.Println("Starting server at port " + os.Getenv("PORT"))
+	if err := http.ListenAndServe(":"+os.Getenv("PORT"), nil); err != nil {
 		log.Fatal(err)
 	}
 }
