@@ -161,3 +161,25 @@ func Regex(str1 string) bool {
 
 	return regex.MatchString(str1) 
 }
+
+func RegexSearch(str1 string, str2 string) bool {
+
+	var regex, err = regexp.Compile(`.*` + str1 + `.*`)
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	return regex.MatchString(str2) 
+}
+
+func RegexTanggal(str1 string) bool {
+
+	var regex, err = regexp.Compile(`^[0-9][0-9][0-9][0-9]-[0-9][0-9]?-[0-9][0-9]?$`)
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	return regex.MatchString(str1) 
+}

@@ -67,24 +67,26 @@ func getDetailPrediction(res http.ResponseWriter, req *http.Request) {
 	//Convert the body to type string
 	string_body := string(body)
 	if strings.Split(string_body, ":")[0] != "" {
-		data := strings.Split(string_body, ":")[1]
-		input := ""
-		two_arguments := false
-		for i := 1; i < len(data)-2; i++ {
-			input += string(data[i])
-			if string(data[i]) == " " {
-				two_arguments = true
+		// data := strings.Split(string_body, ":")[1]
+
+		data := strings.Replace(string_body,"{", "", -1)
+		data = strings.Replace(data,"}", "", -1)
+		data = strings.Replace(data,`"`, "", -1)
+		data = strings.Split(data,":")[1]
+		
+		data = strings.Map(func(r rune) rune {
+			if unicode.IsPrint(r) {
+				return r
 			}
-		}
+			return -1
+		}, data)
 
 		db := openDatabase()
 		result := []HasilPrediksi{}
-		if two_arguments {
-			date := strings.Split(input, " ")[0]
-			disease := strings.Split(input, " ")[1]
 
-			// Db query for hasilprediksi table
-			db_result, err := db.Query("SELECT * FROM hasilprediksi WHERE TanggalPrediksi = '" + date + "' AND PenyakitPrediksi = '" + disease + "'")
+		checkData := strings.Split(data, " ")
+		if (len(checkData) > 1) {
+			db_result, err := db.Query("SELECT * FROM hasilprediksi WHERE TanggalPrediksi='" + checkData[0]+"'")
 			if err != nil {
 				panic(err.Error())
 			}
@@ -97,35 +99,65 @@ func getDetailPrediction(res http.ResponseWriter, req *http.Request) {
 				if err != nil {
 					panic(err.Error()) // proper error handling instead of panic in your app
 				}
-				// Append hasil to result
-				result = append(result, hasil)
+				// Append hasil to result jika regex sesuai
+
+				if sm.RegexSearch(strings.ToLower(checkData[1]), strings.ToLower(hasil.PenyakitPrediksi)) {
+					result = append(result, hasil)
+				}
 			}
+			
 		} else {
-			// Db query for hasilprediksi table
-			db_result, err := db.Query("SELECT * FROM hasilprediksi WHERE TanggalPrediksi = '" + input + "' OR PenyakitPrediksi = '" + input + "'")
-			if err != nil {
-				panic(err.Error())
-			}
-
-			for db_result.Next() {
-				var hasil HasilPrediksi
-
-				// Get hasil for each row
-				err = db_result.Scan(&hasil.TanggalPrediksi, &hasil.NamaPasien, &hasil.PenyakitPrediksi, &hasil.TingkatKemiripan, &hasil.Status)
+			if sm.RegexTanggal(checkData[0]) {
+				db_result, err := db.Query("SELECT * FROM hasilprediksi WHERE TanggalPrediksi='" + checkData[0]+"'")
 				if err != nil {
-					panic(err.Error()) // proper error handling instead of panic in your app
+					panic(err.Error())
 				}
-				// Append hasil to result
-				result = append(result, hasil)
+
+				for db_result.Next() {
+					var hasil HasilPrediksi
+
+					// Get hasil for each row
+					err = db_result.Scan(&hasil.TanggalPrediksi, &hasil.NamaPasien, &hasil.PenyakitPrediksi, &hasil.TingkatKemiripan, &hasil.Status)
+					if err != nil {
+						panic(err.Error()) // proper error handling instead of panic in your app
+					}
+
+					// Append hasil to result
+
+					result = append(result, hasil)
+				}
+			} else {
+				db_result, err := db.Query("SELECT * FROM hasilprediksi")
+				if err != nil {
+					panic(err.Error())
+				}
+
+				for db_result.Next() {
+					var hasil HasilPrediksi
+
+					// Get hasil for each row
+					err = db_result.Scan(&hasil.TanggalPrediksi, &hasil.NamaPasien, &hasil.PenyakitPrediksi, &hasil.TingkatKemiripan, &hasil.Status)
+					if err != nil {
+						panic(err.Error()) // proper error handling instead of panic in your app
+					}
+					// Append hasil to result jika regex sesuai
+
+					if sm.RegexSearch(strings.ToLower(checkData[0]), strings.ToLower(hasil.PenyakitPrediksi)) {
+						result = append(result, hasil)
+					}
+				}
 			}
 		}
-		// Convert result to []byte
+
+		defer db.Close()
+
 		marshal, err := json.Marshal(result)
 		if err != nil {
 			fmt.Println(err)
 		}
 		// Send to frontend
 		res.Write(marshal)
+
 	}
 }
 
@@ -286,7 +318,6 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 
 			res.Write(marshal)
 		}
-
 	}
 }
 
@@ -364,7 +395,7 @@ func main() {
 	sm.BoyerMoore("a pattern matching algorithm", "rithm")
 	sm.BoyerMoore("abacaabadcabacabaabb", "abacab")
 
-	fmt.Println(sm.Lcs("aabbccdddeeefff", "aaccddd"))
+	fmt.Println(sm.RegexSearch("abcd", "abcdefghi"))
 
 	// Server
 	http.HandleFunc(getEnv("BASE_PORT")+"/get-detailprediction", getDetailPrediction)

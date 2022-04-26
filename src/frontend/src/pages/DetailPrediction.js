@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import './components/Container/Container.css'
 import Axios from 'axios'
 
 const DetailPrediction = () => {
@@ -20,7 +21,7 @@ const DetailPrediction = () => {
   }
 
   return (
-    <div id='tesDNA'>
+    <div id="tesDNA">
       <h3> Detail Prediksi DNA </h3>
       <input type='text' placeholder='Input tanggal atau nama penyakit'
         onChange={(e) => {
@@ -32,7 +33,7 @@ const DetailPrediction = () => {
       <div>
         {predictionList.map((val, key) => {
           return (
-            <div className='flex-row ContainerBody'>
+            <div className='flex-row ContainerBody smallheight'>
               <p>{val.index}.</p>
               <p className='margin-left-4'>{val.TanggalPrediksi} -</p>
               <p className='margin-left-4'>{val.NamaPasien} -</p>
