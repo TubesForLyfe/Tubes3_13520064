@@ -214,6 +214,7 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 			return -1
 		}, Tanggal)
 
+		
 		if sm.Regex(DNA) {
 
 			db_result, err := db.Query("SELECT DNA FROM jenispenyakit WHERE NamaPenyakit = '" + Penyakit + "'")
@@ -234,6 +235,29 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 			if !empty {
 
 				if sm.KMP(pDNA, DNA) {
+					db_result, err := db.Query("INSERT INTO hasilprediksi VALUES ('" + Tanggal + "','" + Nama + "','" + Penyakit + "','" + DNA + "',100,1)")
+
+					if err != nil {
+						outputisi := HasilPrediksi{
+							NamaPasien:       Nama,
+							PenyakitPrediksi: Penyakit,
+							TanggalPrediksi:  Tanggal,
+							TingkatKemiripan: 100,
+							Status:           1,
+						}
+		
+						output = append(output, outputisi)
+		
+						marshal, err := json.Marshal(output)
+						if err != nil {
+							fmt.Println(err)
+						}
+		
+						res.Write(marshal)
+						defer db.Close()
+						return
+
+					}
 					outputisi := HasilPrediksi{
 						NamaPasien:       Nama,
 						PenyakitPrediksi: Penyakit,
@@ -241,6 +265,8 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 						TingkatKemiripan: 100,
 						Status:           1,
 					}
+
+					defer db_result.Close()
 	
 					output = append(output, outputisi)
 	
@@ -263,9 +289,10 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 					stat = 0
 				}
 
-				db := openDatabase()
+				log.Printf("%s",DNA)
 				db_result, err := db.Query("INSERT INTO hasilprediksi VALUES ('" + Tanggal + "','" + Nama + "','" + Penyakit + "','" + DNA + "','" + strconv.Itoa(Percentage) + "','" + strconv.Itoa(stat) + "')")
 				if err != nil {
+					log.Printf("here")
 					outputisi := HasilPrediksi{
 						NamaPasien:       Nama,
 						PenyakitPrediksi: Penyakit,
