@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import './DiseasePrediction.css'
-import UploadSequence from "../UploadSequence/UploadSequence"
 import Axios from 'axios'
 
 
@@ -50,7 +49,10 @@ const DiseasePrediction = () => {
           </div>
           <div className = "column middle">
             <p>Sequence DNA:</p>
-            <InputBoxPenyakit func={(arg) => setHandler_nama(arg)}/>
+              <input className="inputBox" type="file" accept=".txt" required
+              onChange={(e) => {
+                setInputFile(e.target.files[0])
+              }}></input>
           </div>
           <div className = "column side">
             <p>Prediksi Penyakit:</p>
