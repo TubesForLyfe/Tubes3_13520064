@@ -27,6 +27,7 @@ type HasilPrediksi struct {
 	TanggalPrediksi  string
 	NamaPasien       string
 	PenyakitPrediksi string
+	SampelDNA 		 string
 	TingkatKemiripan int
 	Status           int
 }
@@ -95,7 +96,7 @@ func getDetailPrediction(res http.ResponseWriter, req *http.Request) {
 				var hasil HasilPrediksi
 
 				// Get hasil for each row
-				err = db_result.Scan(&hasil.TanggalPrediksi, &hasil.NamaPasien, &hasil.PenyakitPrediksi, &hasil.TingkatKemiripan, &hasil.Status)
+				err = db_result.Scan(&hasil.TanggalPrediksi, &hasil.NamaPasien, &hasil.PenyakitPrediksi, &hasil.SampelDNA, &hasil.TingkatKemiripan, &hasil.Status)
 				if err != nil {
 					panic(err.Error()) // proper error handling instead of panic in your app
 				}
@@ -117,7 +118,7 @@ func getDetailPrediction(res http.ResponseWriter, req *http.Request) {
 					var hasil HasilPrediksi
 
 					// Get hasil for each row
-					err = db_result.Scan(&hasil.TanggalPrediksi, &hasil.NamaPasien, &hasil.PenyakitPrediksi, &hasil.TingkatKemiripan, &hasil.Status)
+					err = db_result.Scan(&hasil.TanggalPrediksi, &hasil.NamaPasien, &hasil.PenyakitPrediksi, &hasil.SampelDNA, &hasil.TingkatKemiripan, &hasil.Status)
 					if err != nil {
 						panic(err.Error()) // proper error handling instead of panic in your app
 					}
@@ -136,7 +137,7 @@ func getDetailPrediction(res http.ResponseWriter, req *http.Request) {
 					var hasil HasilPrediksi
 
 					// Get hasil for each row
-					err = db_result.Scan(&hasil.TanggalPrediksi, &hasil.NamaPasien, &hasil.PenyakitPrediksi, &hasil.TingkatKemiripan, &hasil.Status)
+					err = db_result.Scan(&hasil.TanggalPrediksi, &hasil.NamaPasien, &hasil.PenyakitPrediksi, &hasil.SampelDNA, &hasil.TingkatKemiripan, &hasil.Status)
 					if err != nil {
 						panic(err.Error()) // proper error handling instead of panic in your app
 					}
@@ -263,7 +264,7 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 				}
 
 				db := openDatabase()
-				db_result, err := db.Query("INSERT INTO hasilprediksi VALUES ('" + Tanggal + "','" + Nama + "','" + Penyakit + "','" + strconv.Itoa(Percentage) + "','" + strconv.Itoa(stat) + "')")
+				db_result, err := db.Query("INSERT INTO hasilprediksi VALUES ('" + Tanggal + "','" + Nama + "','" + Penyakit + "','" + DNA + "','" + strconv.Itoa(Percentage) + "','" + strconv.Itoa(stat) + "')")
 				if err != nil {
 					outputisi := HasilPrediksi{
 						NamaPasien:       Nama,

@@ -34,9 +34,10 @@ CREATE TABLE `hasilprediksi` (
   `TanggalPrediksi` date NOT NULL,
   `NamaPasien` varchar(100) NOT NULL,
   `PenyakitPrediksi` varchar(100) NOT NULL,
+  `SampelDNA` varchar(100) NOT NULL,
   `TingkatKemiripan` int(11) NOT NULL,
   `Status` int(1) NOT NULL,
-  PRIMARY KEY (`TanggalPrediksi`,`NamaPasien`,`PenyakitPrediksi`),
+  PRIMARY KEY (`TanggalPrediksi`,`NamaPasien`,`PenyakitPrediksi`,`SampelDNA`),
   KEY `PenyakitPrediksi` (`PenyakitPrediksi`),
   CONSTRAINT `hasilprediksi_ibfk_1` FOREIGN KEY (`PenyakitPrediksi`) REFERENCES `jenispenyakit` (`NamaPenyakit`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
