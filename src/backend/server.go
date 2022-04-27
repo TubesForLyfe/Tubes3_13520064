@@ -234,7 +234,7 @@ func getDiseasePrediction(res http.ResponseWriter, req *http.Request) {
 
 			if !empty {
 
-				if sm.KMP(pDNA, DNA) {
+				if sm.KMP(pDNA, DNA) && sm.BoyerMoore(pDNA, DNA) {
 					db_result, err := db.Query("INSERT INTO hasilprediksi VALUES ('" + Tanggal + "','" + Nama + "','" + Penyakit + "','" + DNA + "',100,1)")
 
 					if err != nil {
