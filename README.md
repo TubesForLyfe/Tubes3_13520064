@@ -29,6 +29,15 @@ Frontend bertujuan untuk memberikan antarmuka yang dapat digunakan pengguna untu
 1. Install Go Lang pada https://go.dev/
 2. Install NodeJs pada https://nodejs.org/
 ##### Cara menjalankan aplikasi
+
+Setup .env:
+
+1. isi env pada folder frontend dengan link ke backend (`localhost:{port}` untuk menggunakan backend local dan `https://tesdna.herokuapp.com/` untuk menggunakan backend heroku)
+2. import sql pada file test/dnastima.sql ke database local
+3. isi env pada folder backend sesuai dengan yang dibutuhkan key (4 line pertama merupakan credential database dan 3 line terakhir adalah port backend)
+
+langkah run:
+
 1. Buka directory frontend pada terminal,
 ```
 cd src/frontend/
