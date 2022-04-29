@@ -8,11 +8,14 @@ import Axios from 'axios'
 const DiseasePrediction = () => {
   const [inputName, setInputName] = useState('');
   const [inputFile, setInputFile] = useState();
+  const [inputFileName, setInputFileName] = useState('');
   const [inputPenyakit, setInputPenyakit] = useState('');
 
   const [hasilTes, setHasilTes] = useState([]);
 
   const getDiseasePrediction = (e) => {
+
+    console.log("Getting data...");
     e.preventDefault();
 
     const formData = new FormData();
@@ -22,17 +25,23 @@ const DiseasePrediction = () => {
     formData.append('tanggal', new Date().toLocaleString().split(" ")[0]);
 
     if (inputName !== "") {
+      const s = inputFileName.split('.')
+      if (s[s.length - 1] == "txt") {
         Axios.post(`${process.env.REACT_APP_DNA_API}/get-diseaseprediction`, formData)
-      .then((response) => {
-        setHasilTes(response.data)
-        console.log(hasilTes)
-      })
+        .then((response) => {
+          setHasilTes(response.data)
+          console.log(hasilTes)
+        })
+      } else {
+        let arr = [{Status:-5}]
+        setHasilTes(arr)
+      }
+        
     } else {
       let arr = [{Status:-4}]
-      console.log(arr)
       setHasilTes(arr)
     }
-    
+    console.log("selesai");
   }
 
   return (
@@ -52,6 +61,7 @@ const DiseasePrediction = () => {
               <input className="inputBox" type="file" accept=".txt" required
               onChange={(e) => {
                 setInputFile(e.target.files[0])
+                setInputFileName(e.target.files[0].name)
               }}></input>
           </div>
           <div className = "column side">
@@ -91,6 +101,9 @@ const DiseasePrediction = () => {
               }
               {val.Status === -4 &&
                 <p className="Same">Nama Tidak Boleh Kosong</p>
+              }
+              {val.Status === -5 &&
+                <p className="Same">File harus dengan format .txt</p>
               }
               </div>
             )
